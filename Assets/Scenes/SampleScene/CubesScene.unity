@@ -177,7 +177,7 @@ MonoBehaviour:
     z: 2
   RotationSpeed:
     x: 0
-    y: 0
+    y: 1
     z: 0
   CubePrefab: {fileID: 4634230696827413634, guid: a7d85ceeabccd7bba9b541f6f6956b33,
     type: 3}

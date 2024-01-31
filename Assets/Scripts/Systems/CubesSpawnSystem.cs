@@ -13,10 +13,13 @@ namespace CubesProject
     [UpdateInGroup(typeof(InitializationSystemGroup))]
     public partial struct CubesSpawnSystem : ISystem
     {
+        EntityQuery singleCubeQuery;
+
         [BurstCompile]
         public void OnCreate(ref SystemState state)
         {
             state.RequireForUpdate<Cubes>();
+            singleCubeQuery = state.GetEntityQuery(ComponentType.ReadWrite<SingleCube>());
         }
 
         [BurstCompile]
@@ -39,7 +42,7 @@ namespace CubesProject
 
             var ecb = new EntityCommandBuffer(Allocator.Temp);
 
-            ecb.DestroyEntity(state.GetEntityQuery(ComponentType.ReadWrite<SingleCube>()), EntityQueryCaptureMode.AtRecord);
+            ecb.DestroyEntity(singleCubeQuery, EntityQueryCaptureMode.AtRecord);
 
             for (var x = 0; x < cubesData.Size.x; ++x) {
                 for (var y = 0; y < cubesData.Size.y; ++y) {
