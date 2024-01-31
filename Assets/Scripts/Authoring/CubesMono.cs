@@ -27,6 +27,9 @@ namespace CubesProject
                 RotationSpeed = authoring.RotationSpeed,
                 CubePrefab = GetEntity(authoring.CubePrefab, new TransformUsageFlags())
             });
+            AddComponent(entity, new EventFlags{
+                IsSpawnRequested = false
+            });
         }
     }
 }

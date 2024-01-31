@@ -28,10 +28,18 @@ namespace CubesProject
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
-            state.Enabled = false;
             var cubesEntity = SystemAPI.GetSingletonEntity<Cubes>();
             var cubesData = state.EntityManager.GetComponentData<Cubes>(cubesEntity);
+            var eventFlagsData = state.EntityManager.GetComponentData<EventFlags>(cubesEntity);
+
+            if (!eventFlagsData.IsSpawnRequested)
+                return;
+            eventFlagsData.IsSpawnRequested = false;
+            state.EntityManager.SetComponentData<EventFlags>(cubesEntity, eventFlagsData);
+
             var ecb = new EntityCommandBuffer(Allocator.Temp);
+
+            ecb.DestroyEntity(state.GetEntityQuery(ComponentType.ReadWrite<SingleCube>()), EntityQueryCaptureMode.AtRecord);
 
             for (var x = 0; x < cubesData.Size.x; ++x) {
                 for (var y = 0; y < cubesData.Size.y; ++y) {
@@ -39,14 +47,9 @@ namespace CubesProject
                         var newCube = ecb.Instantiate(cubesData.CubePrefab);
                         var position = cubesData.Step * new float3(x, y, z);
 
+                        ecb.AddComponent(newCube, new SingleCube{});
                         ecb.AddComponent(newCube, new Parent{Value = cubesEntity});
                         ecb.SetComponent(newCube, LocalTransform.FromPosition(position));
-                        /*{
-                            Position = position,
-                            Rotation = quaternion.identity,
-                            Scale = 1
-                            //Value = new float4x4(quaternion.identity, position)
-                        });*/
                     }
                 }
             }

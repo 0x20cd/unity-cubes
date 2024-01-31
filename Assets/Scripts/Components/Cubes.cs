@@ -13,4 +13,11 @@ namespace CubesProject
         public float3 RotationSpeed;
         public Entity CubePrefab;
     }
+
+    public struct EventFlags : IComponentData
+    {
+        public bool IsSpawnRequested;
+    }
+
+    public struct SingleCube : IComponentData {}
 }
