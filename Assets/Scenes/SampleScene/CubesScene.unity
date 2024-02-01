@@ -181,6 +181,10 @@ MonoBehaviour:
     z: 0
   CubePrefab: {fileID: 4634230696827413634, guid: a7d85ceeabccd7bba9b541f6f6956b33,
     type: 3}
+  Materials:
+  - {fileID: 2100000, guid: 229712b6d8c0e7952927565a102c419e, type: 2}
+  - {fileID: 2100000, guid: c2b264d6e4b8fdaf3bfe3fd6d47a7c20, type: 2}
+  - {fileID: 2100000, guid: 906a13cc8562099249806c7a01224931, type: 2}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

@@ -38,7 +38,8 @@ namespace CubesProject
             if (!eventFlagsData.IsSpawnRequested)
                 return;
             eventFlagsData.IsSpawnRequested = false;
-            state.EntityManager.SetComponentData<EventFlags>(cubesEntity, eventFlagsData);
+            eventFlagsData.IsMaterialChangeRequested = true;
+            eventFlagsData.MaterialIndex = -1;
 
             var ecb = new EntityCommandBuffer(Allocator.Temp);
 
@@ -57,6 +58,7 @@ namespace CubesProject
                 }
             }
 
+            ecb.SetComponent(cubesEntity, eventFlagsData);
             ecb.Playback(state.EntityManager);
         }
     }

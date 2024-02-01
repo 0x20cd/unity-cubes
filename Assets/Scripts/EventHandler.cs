@@ -21,7 +21,6 @@ namespace CubesProject
             var eventFlagsData = entityManager.GetComponentData<EventFlags>(cubesEntity);
             eventFlagsData.IsSpawnRequested = true;
             entityManager.SetComponentData<EventFlags>(cubesEntity, eventFlagsData);
-            Debug.Log("Spawn");
         }
 
         public void RequestDestroy()
@@ -31,7 +30,9 @@ namespace CubesProject
 
         public void RequestMaterialChange()
         {
-
+            var eventFlagsData = entityManager.GetComponentData<EventFlags>(cubesEntity);
+            eventFlagsData.IsMaterialChangeRequested = true;
+            entityManager.SetComponentData<EventFlags>(cubesEntity, eventFlagsData);
         }
     }
 }
