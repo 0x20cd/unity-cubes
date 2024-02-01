@@ -17,13 +17,4 @@ namespace CubesProject
         public Entity CubePrefab;
         public FixedList32Bytes<BatchMaterialID> Materials;
     }
-
-    public struct EventFlags : IComponentData
-    {
-        public bool IsSpawnRequested;
-        public bool IsMaterialChangeRequested;
-        public int MaterialIndex;
-    }
-
-    public struct SingleCube : IComponentData {}
 }
