@@ -25,7 +25,9 @@ namespace CubesProject
 
         public void RequestDestroy()
         {
-
+            var eventFlagsData = entityManager.GetComponentData<EventFlags>(cubesEntity);
+            eventFlagsData.IsDestroyRequested = true;
+            entityManager.SetComponentData<EventFlags>(cubesEntity, eventFlagsData);
         }
 
         public void RequestMaterialChange()

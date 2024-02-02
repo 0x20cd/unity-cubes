@@ -40,6 +40,7 @@ namespace CubesProject
             AddComponent(entity, cubesComponent);
             AddComponent(entity, new EventFlags{
                 IsSpawnRequested = false,
+                IsDestroyRequested = false,
                 IsMaterialChangeRequested = false,
                 MaterialIndex = -1
             });

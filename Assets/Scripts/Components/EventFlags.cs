@@ -12,6 +12,7 @@ namespace CubesProject
     public struct EventFlags : IComponentData
     {
         public bool IsSpawnRequested;
+        public bool IsDestroyRequested;
         public bool IsMaterialChangeRequested;
         public int MaterialIndex;
     }
