@@ -9,5 +9,8 @@ using Unity.Collections;
 
 namespace CubesProject
 {
-    public struct SingleCube : IComponentData {}
+    public struct SingleCube : IComponentData
+    {
+        public bool IsClicked;
+    }
 }
