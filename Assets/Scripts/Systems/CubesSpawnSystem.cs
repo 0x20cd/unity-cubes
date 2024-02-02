@@ -6,6 +6,7 @@ using Unity.Mathematics;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Transforms;
+using Unity.Physics;
 
 namespace CubesProject
 {
@@ -51,7 +52,7 @@ namespace CubesProject
                         var newCube = ecb.Instantiate(cubesData.CubePrefab);
                         var position = cubesData.Step * new float3(x, y, z);
 
-                        ecb.AddComponent(newCube, new SingleCube{});
+                        ecb.AddComponent(newCube, new SingleCube{IsClicked = false});
                         ecb.AddComponent(newCube, new Parent{Value = cubesEntity});
                         ecb.SetComponent(newCube, LocalTransform.FromPosition(position));
                     }
