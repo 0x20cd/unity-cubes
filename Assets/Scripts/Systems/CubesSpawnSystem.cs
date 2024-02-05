@@ -6,6 +6,7 @@ using Unity.Mathematics;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Transforms;
+using Unity.Jobs;
 
 namespace CubesProject
 {
@@ -31,35 +32,52 @@ namespace CubesProject
         [BurstCompile]
         public void OnUpdate(ref SystemState state)
         {
+            var ECBSystem = SystemAPI.GetSingleton<EndInitializationEntityCommandBufferSystem.Singleton>();
             var cubesEntity = SystemAPI.GetSingletonEntity<Cubes>();
             var cubesData = state.EntityManager.GetComponentData<Cubes>(cubesEntity);
             var eventFlagsData = state.EntityManager.GetComponentData<EventFlags>(cubesEntity);
 
+            state.Dependency.Complete();
+
             if (!eventFlagsData.IsSpawnRequested)
                 return;
+
+            var ECB = ECBSystem.CreateCommandBuffer(state.WorldUnmanaged);
+
             eventFlagsData.IsSpawnRequested = false;
             eventFlagsData.IsMaterialChangeRequested = true;
             eventFlagsData.MaterialIndex = -1;
 
-            var ecb = new EntityCommandBuffer(Allocator.Temp);
+            ECB.DestroyEntity(singleCubeQuery, EntityQueryCaptureMode.AtRecord);
+            ECB.SetComponent(cubesEntity, eventFlagsData);
 
-            ecb.DestroyEntity(singleCubeQuery, EntityQueryCaptureMode.AtRecord);
+            state.Dependency = new SpawnJob() {
+                CubesEntity = cubesEntity,
+                CubesData = cubesData,
+                ECB = ECB.AsParallelWriter()
+            }.Schedule(cubesData.Size.x * cubesData.Size.y * cubesData.Size.z, 32, state.Dependency);
+        }
+    }
 
-            for (var x = 0; x < cubesData.Size.x; ++x) {
-                for (var y = 0; y < cubesData.Size.y; ++y) {
-                    for (var z = 0; z < cubesData.Size.z; ++z) {
-                        var newCube = ecb.Instantiate(cubesData.CubePrefab);
-                        var position = cubesData.Step * new float3(x, y, z);
+    [BurstCompile]
+    public partial struct SpawnJob : IJobParallelFor
+    {
+        public Entity CubesEntity;
+        public Cubes CubesData;
+        public EntityCommandBuffer.ParallelWriter ECB;
 
-                        ecb.AddComponent(newCube, new SingleCube{});
-                        ecb.AddComponent(newCube, new Parent{Value = cubesEntity});
-                        ecb.SetComponent(newCube, LocalTransform.FromPosition(position));
-                    }
-                }
-            }
+        public void Execute(int index)
+        {
+            int x = index % CubesData.Size.x;
+            int y = (index / CubesData.Size.x) % CubesData.Size.y;
+            int z = (index / CubesData.Size.x / CubesData.Size.y) % CubesData.Size.z;
 
-            ecb.SetComponent(cubesEntity, eventFlagsData);
-            ecb.Playback(state.EntityManager);
+            var newCube = ECB.Instantiate(index, CubesData.CubePrefab);
+            var position = CubesData.Step * new float3(x, y, z);
+
+            ECB.AddComponent(index, newCube, new SingleCube{});
+            ECB.AddComponent(index, newCube, new Parent{Value = CubesEntity});
+            ECB.SetComponent(index, newCube, LocalTransform.FromPosition(position));
         }
     }
 }

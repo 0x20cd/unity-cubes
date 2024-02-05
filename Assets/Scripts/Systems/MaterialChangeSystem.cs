@@ -12,7 +12,7 @@ using UnityEngine.Rendering;
 namespace CubesProject
 {
     [BurstCompile]
-    [UpdateInGroup(typeof(InitializationSystemGroup))]
+    [UpdateInGroup(typeof(SimulationSystemGroup))]
     public partial struct MaterialChangeSystem : ISystem
     {
         EntityQuery singleCubeQuery;
