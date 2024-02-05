@@ -6,6 +6,7 @@ using Unity.Mathematics;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Transforms;
+using Unity.Jobs;
 
 namespace CubesProject
 {
@@ -30,11 +31,25 @@ namespace CubesProject
         {
             var cubesEntity = SystemAPI.GetSingletonEntity<Cubes>();
             var cubesData = state.EntityManager.GetComponentData<Cubes>(cubesEntity);
-            float deltaTime = SystemAPI.Time.DeltaTime;
 
-            foreach (var (cube, transform) in SystemAPI.Query<RefRO<SingleCube>, RefRW<LocalTransform>>()) {
-                transform.ValueRW = transform.ValueRO.Rotate(quaternion.EulerXYZ(cubesData.RotationSpeed * deltaTime));
-            }
+            state.Dependency.Complete();
+
+            state.Dependency = new RotateJob() {
+                RotationSpeed = cubesData.RotationSpeed,
+                DeltaTime = SystemAPI.Time.DeltaTime
+            }.ScheduleParallel(state.Dependency);
+        }
+    }
+
+    [BurstCompile]
+    public partial struct RotateJob : IJobEntity
+    {
+        public float DeltaTime;
+        public float3 RotationSpeed;
+
+        public void Execute(in SingleCube cube, ref LocalTransform transform)
+        {
+            transform = transform.Rotate(quaternion.EulerXYZ(RotationSpeed * DeltaTime));
         }
     }
 }
