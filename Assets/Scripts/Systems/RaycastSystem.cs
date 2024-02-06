@@ -37,14 +37,14 @@ namespace CubesProject
         {
             const float rayDistance = 200f;
 
-            if (Input.GetMouseButton(0)) {
+            if (Input.GetMouseButtonUp(0)) {
                 UnityEngine.Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-                Debug.Log(Input.mousePosition.ToString() + " " + ray.direction.ToString());
-
                 Entity entity = Raycast(ray.origin, ray.direction * rayDistance);
-                if (entity != Entity.Null) {
-                    state.EntityManager.DestroyEntity(entity);
+                if (entity != Entity.Null && state.EntityManager.HasComponent<SingleCube>(entity)) {
+                    var singleCubeData = state.EntityManager.GetComponentData<SingleCube>(entity);
+                    singleCubeData.IsClicked = true;
+                    state.EntityManager.SetComponentData<SingleCube>(entity, singleCubeData);
                 }
             }
         }

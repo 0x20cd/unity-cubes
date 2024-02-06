@@ -12,5 +12,6 @@ namespace CubesProject
     public struct SingleCube : IComponentData
     {
         public bool IsClicked;
+        public int3 Point;
     }
 }
